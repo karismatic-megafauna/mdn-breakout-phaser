@@ -126,7 +126,6 @@ function ballHitBrick(ball, brick) {
   killTween.start();
   score += 10;
   scoreText.setText('Points: '+score);
-
 }
 
 function ballLeaveScreen() {
