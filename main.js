@@ -104,6 +104,7 @@ function startGame() {
 
 function ballHitPaddle() {
   ball.animations.play('wobble');
+  ball.body.velocity.x = -1*5*(paddle.x - ball.x);
 }
 
 function ballHitBrick(ball, brick) {
@@ -111,21 +112,21 @@ function ballHitBrick(ball, brick) {
   killTween.to({x: 0, y:0}, 200, Phaser.Easing.Linear.None);
   killTween.onComplete.addOnce(function(){
     brick.kill();
+    var count_alive = 0;
+    for (i = 0; i < bricks.children.length; i++) {
+      if (bricks.children[i].alive == true) {
+        count_alive++;
+      }
+    }
+    if (count_alive == 0) {
+      alert('You won, yayz!');
+      location.reload();
+    }
   }, this);
   killTween.start();
   score += 10;
   scoreText.setText('Points: '+score);
 
-  var count_alive = 0;
-  for (i = 0; i < bricks.children.length; i++) {
-    if (bricks.children[i].alive == true) {
-      count_alive++;
-    }
-  }
-  if (count_alive == 0) {
-    alert('You won, yayz!');
-    location.reload();
-  }
 }
 
 function ballLeaveScreen() {
