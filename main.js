@@ -13,6 +13,8 @@ var lives = 3;
 var livesText;
 var lifeLostText;
 var textStyle;
+var playing = false;
+var startButton;
 
 function preload() {
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -23,6 +25,7 @@ function preload() {
   game.load.image('paddle', 'img/paddle.png');
   game.load.image('brick', 'img/brick.png');
   game.load.spritesheet('ball', 'img/wobble.png', 20, 20);
+  game.load.spritesheet('button', 'img/button.png', 120, 40);
 }
 
 function create() {
@@ -33,7 +36,6 @@ function create() {
   game.physics.enable(ball, Phaser.Physics.ARCADE);
   ball.body.collideWorldBounds = true;
   ball.body.bounce.set(1);
-  ball.body.velocity.set(150, -150);
   game.physics.arcade.checkCollision.down = false;
   ball.checkWorldBounds = true;
   ball.events.onOutOfBounds.add(ballLeaveScreen, this);
@@ -52,12 +54,17 @@ function create() {
 	lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Life lost, tap to continue', textStyle);
 	lifeLostText.anchor.set(0.5);
 	lifeLostText.visible = false;
+
+  startButton = game.add.button(game.world.width*0.5, game.world.height*0.5, 'button', startGame, this, 1, 0, 2);
+  startButton.anchor.set(0.5);
 }
 
 function update() {
   game.physics.arcade.collide(ball, paddle, ballHitPaddle);
   game.physics.arcade.collide(ball, bricks, ballHitBrick);
-  paddle.x = game.input.x || game.world.width * 0.5;
+  if(playing) {
+    paddle.x = game.input.x || game.world.width * 0.5;
+  }
 }
 
 function initBricks() {
@@ -87,6 +94,12 @@ function initBricks() {
       bricks.add(newBrick);
     }
   }
+}
+
+function startGame() {
+  startButton.destroy();
+  ball.body.velocity.set(150, -150);
+  playing = true;
 }
 
 function ballHitPaddle() {
@@ -128,6 +141,6 @@ function ballLeaveScreen() {
     }, this);
   } else {
     alert('You lost, game over!');
-    locatoin.reload();
+    location.reload();
   }
 }
