@@ -22,11 +22,13 @@ function preload() {
   game.load.image('ball', 'img/ball.png');
   game.load.image('paddle', 'img/paddle.png');
   game.load.image('brick', 'img/brick.png');
+  game.load.spritesheet('ball', 'img/wobble.png', 20, 20);
 }
 
 function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE);
   ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
+  ball.animations.add('wobble', [0,1,0,2,0,1,0,2,0], 24);
   ball.anchor.set(0.5);
   game.physics.enable(ball, Phaser.Physics.ARCADE);
   ball.body.collideWorldBounds = true;
@@ -53,7 +55,7 @@ function create() {
 }
 
 function update() {
-  game.physics.arcade.collide(ball, paddle);
+  game.physics.arcade.collide(ball, paddle, ballHitPaddle);
   game.physics.arcade.collide(ball, bricks, ballHitBrick);
   paddle.x = game.input.x || game.world.width * 0.5;
 }
@@ -87,8 +89,17 @@ function initBricks() {
   }
 }
 
+function ballHitPaddle() {
+  ball.animations.play('wobble');
+}
+
 function ballHitBrick(ball, brick) {
-  brick.kill();
+  var killTween = game.add.tween(brick.scale);
+  killTween.to({x: 0, y:0}, 200, Phaser.Easing.Linear.None);
+  killTween.onComplete.addOnce(function(){
+    brick.kill();
+  }, this);
+  killTween.start();
   score += 10;
   scoreText.setText('Points: '+score);
 
